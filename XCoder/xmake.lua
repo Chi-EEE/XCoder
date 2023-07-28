@@ -1,9 +1,35 @@
 add_rules("mode.debug", "mode.release")
 
+set_languages("cxx17")
+
 target("XCoder")
     set_kind("binary")
-    add_files("src/*.cpp")
 
+    add_files("src/**.cpp")
+    add_headerfiles("src/**.h")
+
+    
+    if is_mode("debug") then 
+        set_runtimes("MDd")
+    else 
+        set_runtimes("MD")
+    end
+    
+    -- To make it possible to access the SupercellFlash files
+    add_includedirs("include")
+
+    -- SupercellFlash files
+    add_linkdirs("lib/$(mode)")
+    add_links(
+        "ASTC",
+        "ETCPACK",
+        "LZHAM", 
+        "LZMA", 
+        "SupercellFlash", 
+        "SupercellCompression", 
+        "SupercellTextureLoader", 
+        "Zstandard"
+        )
 --
 -- If you want to known more usage about xmake, please see https://xmake.io
 --

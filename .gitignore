@@ -39,3 +39,4 @@ build/
 .DS_Store
 
 vsxmake2022
+.vscode/compile_commands.json
