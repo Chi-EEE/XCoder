@@ -68,12 +68,15 @@ int main(int argc, char* argv[]) {
                     }
                     auto shape = maybeShape.value();
                     QPainterPath path;
+                    std::cout << "Command Size: " << shape->commands.size() << '\n';
                     for (auto command : shape->commands) {
+                        std::cout << "Vertex Size: " << command->vertices.size() << '\n';
                         for (auto vertex : command->vertices) {
-                            path.addPath(QPainterPath(QPointF(vertex->x(), vertex->y())));
+                            std::cout << "V: " << vertex->x() << ", " << vertex->y() << '\n';
+                            path.moveTo(vertex->x(), vertex->y());
                         }
                     }
-                    auto rect = path.boundingRect().toRect();
+                    auto rect = path.boundingRect();
                     cout << "Rect " << instanceId << ":" << '\n';
                     cout << rect.x() << ',' << rect.y() << ',' << rect.width() << ',' << rect.height() << '\n';
                     cout << '\n';
