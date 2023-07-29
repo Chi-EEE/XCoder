@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
                         std::cout << "Vertex Size: " << command->vertices.size() << '\n';
                         for (auto vertex : command->vertices) {
                             std::cout << "V: " << vertex->x() << ", " << vertex->y() << '\n';
-                            path.moveTo(vertex->x(), vertex->y());
+                            path.lineTo(vertex->x(), vertex->y());
                         }
                     }
                     auto rect = path.boundingRect();
