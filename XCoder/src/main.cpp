@@ -1,6 +1,8 @@
 #include <iostream>
 #include "SupercellFlash.h"
 
+#include <QPainterPath>
+
 #include "tl/expected.hpp"
 #include <optional>
 
@@ -47,8 +49,35 @@ int main(int argc, char* argv[]) {
                 }
                 auto exportMovieClip = maybeExportMovieClip.value();
 
-                cout << exportId << " movie clip has: " << exportMovieClip->frames.size() << " frames!" << '\n';
-
+                cout << exportId << " movie clip has:" << '\n';
+                cout << exportMovieClip->frames.size() << " frames" << '\n';
+                cout << exportMovieClip->frameElements.size() << " fream elements" << '\n';
+                cout << exportMovieClip->instances.size() << " instances" << '\n';
+                
+                for (auto instance : exportMovieClip->instances) {
+                    const int instanceId = instance->id;
+                    optional<sc::pShape> maybeShape = nullopt;
+                    for (auto shape : swf.shapes) {
+                        if (instanceId == shape->id()) {
+                            maybeShape = shape;
+                            break;
+                        }
+                    }
+                    if (!maybeShape.has_value()) {
+                        break;
+                    }
+                    auto shape = maybeShape.value();
+                    QPainterPath path;
+                    for (auto command : shape->commands) {
+                        for (auto vertex : command->vertices) {
+                            path.addPath(QPainterPath(QPointF(vertex->x(), vertex->y())));
+                        }
+                    }
+                    auto rect = path.boundingRect().toRect();
+                    cout << "Rect " << instanceId << ":" << '\n';
+                    cout << rect.x() << ',' << rect.y() << ',' << rect.width() << ',' << rect.height() << '\n';
+                    cout << '\n';
+                }
         }
     }
     else {
