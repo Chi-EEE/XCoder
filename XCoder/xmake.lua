@@ -1,9 +1,12 @@
 add_rules("mode.debug", "mode.release")
+add_requires("tl_expected")
 
 set_languages("cxx17")
 
 target("XCoder")
     set_kind("binary")
+
+    add_packages("tl_expected")
 
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")
