@@ -1,6 +1,7 @@
 add_rules("mode.debug", "mode.release")
 add_requires("tl_expected")
 add_requires("qt6widgets")
+add_requires("opencv")
 
 set_languages("cxx17")
 
@@ -10,18 +11,13 @@ target("XCoder")
 
     add_packages("tl_expected")
     add_packages("qt6widgets")
+    add_packages("opencv")
 
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")
-
-    if is_mode("debug") then 
-        set_runtimes("MDd")
-    else 
-        set_runtimes("MD")
-    end
     
     after_build(function(target)
-        for _, dll in ipairs(os.files("$(scriptdir)/lib/qt/*.dll")) do
+        for _, dll in ipairs(os.files("$(scriptdir)/lib/dll/*.dll")) do
             os.cp(dll, path.join(target:targetdir(), path.filename(dll)))
         end
     end)

@@ -11,10 +11,10 @@
 
 #include "objects/Shape.h"
 #include "objects/MovieClip.h"
-#include "objects/SWFTexture.h"
 #include "objects/TextField.h"
 #include "objects/MovieClipModifier.h"
 #include "objects/ExportName.h"
+#include "texture/SWFTexture.h"
 
 #include "transformation/MatrixBank.h"
 
@@ -27,7 +27,6 @@ using namespace std;
 
 #include <filesystem>
 namespace fs = filesystem;
-
 
 namespace sc
 {
@@ -60,6 +59,8 @@ namespace sc
 		std::string multiResFileSuffix() { return m_multiResFileSuffix; }
 		std::string lowResFileSuffix() { return m_lowResFileSuffix; }
 
+		bool usePrecisionMatrices() { return m_usePrecisionMatrices; }
+
 	public:
 		void useExternalTexture(bool status) { m_useExternalTexture = status; }
 
@@ -68,6 +69,8 @@ namespace sc
 
 		void multiResFileSuffix(std::string postfix) { m_multiResFileSuffix = postfix; }
 		void lowResFileSuffix(std::string postfix) { m_lowResFileSuffix = postfix; }
+
+		void usePrecisionMatrices(bool status) { m_usePrecisionMatrices = status; }
 
 	private:
 		bool loadTags();
@@ -87,6 +90,8 @@ namespace sc
 		bool m_useMultiResTexture = false;
 
 		bool m_useLowResTexture = true;
+
+		bool m_usePrecisionMatrices = false;
 
 		std::string m_multiResFileSuffix = MULTIRES_DEFAULT_SUFFIX;
 		std::string m_lowResFileSuffix = LOWRES_DEFAULT_SUFFIX;

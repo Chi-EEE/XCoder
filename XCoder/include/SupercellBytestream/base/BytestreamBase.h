@@ -4,7 +4,6 @@
 #include <cstring>
 
 #include "SupercellBytestream/base/Endian.h"
-#include "SupercellBytestream/error/StreamException.h"
 
 namespace sc
 {
@@ -12,7 +11,7 @@ namespace sc
 	{
 	protected:
 		virtual size_t _read(void* data, size_t dataSize) = 0;
-		virtual size_t _write(void* data, size_t dataSize) = 0;
+		virtual size_t _write(const void* data, size_t dataSize) = 0;
 
 	public:
 		virtual ~BytestreamBase() {};
@@ -21,6 +20,11 @@ namespace sc
 		virtual void seek(uint32_t pos) = 0;
 
 		virtual uint32_t size() = 0;
+
+		virtual uint8_t* data()
+		{
+			return nullptr;
+		}
 
 		virtual void close() = 0;
 
@@ -37,21 +41,23 @@ namespace sc
 				seek(tell() + length);
 		}
 
-		size_t read(void* data, size_t dataSize) {
-			if (!closed) {
+		size_t read(void* data, size_t dataSize)
+		{
+			if (!closed && !eof()) {
 				return _read(data, dataSize);
 			}
 			else {
-				throw StreamException(StreamError::CLOSED_ERROR, "Failed to read data from closed stream.");
+				return 0;
 			}
 		};
 
-		size_t write(void* data, size_t dataSize) {
+		size_t write(const void* data, size_t dataSize)
+		{
 			if (!closed) {
 				return _write(data, dataSize);
 			}
 			else {
-				throw StreamException(StreamError::CLOSED_ERROR, "Failed to write data to closed stream.");
+				return 0;
 			}
 		};
 
