@@ -37,3 +37,4 @@ target("XCoder")
         "SupercellTextureLoader", 
         "Zstandard"
     )
+    set_runargs("C:/Users/admin/Downloads/CRA/assets/sc/chr_axe_man.sc")
