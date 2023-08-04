@@ -90,93 +90,100 @@ void saveShape(sc::pSWFTexture& texture, sc::pShape& shape, string filePath) {
 }
 
 
-std::vector<QVector2D> generateChildrensPointF(SupercellSWF swf, pMovieClip movieClip, Matrix2D* matrixIn)
-{
-	std::vector<pShapeDrawBitmapCommandVertex> A;
-
-	for (int i = 0; i < movieClip->frameElements.size(); i++)
-	{
-		const pMovieClipFrameElement frameElement = movieClip->frameElements[i];
-		optional<uint16_t> maybeShapeIndex = nullopt;
-		for (auto shape : swf.shapes) {
-			if (shape->id() == frameElement->instanceIndex) {
-				maybeShapeIndex = make_optional(shape->id());
-			}
-		}
-		if (maybeShapeIndex.has_value())
-		{
-			pShape shapeToRender = swf.shapes[maybeShapeIndex.value()];
-
-			Matrix2D* childrenMatrixData = nullptr;
-			if (frameElement->colorTransformIndex != 0xFFFF) {
-				swf.matrixBanks[movieClip->matrixBankIndex()]->getMatrixIndex(childrenMatrixData, frameElement->matrixIndex);
-			}
-			Matrix2D* matrixData;
-			if (childrenMatrixData != nullptr) {
-				matrixData = childrenMatrixData;
-			}
-
-			if (matrixIn != nullptr)
-			{
-				//matrixData.Multiply(matrixIn);
-			}
-
-			if (matrixData != nullptr)
-			{
-				for (pShapeDrawBitmapCommand command : shapeToRender->commands)
-				{
-					auto size = command->vertices.size();
-					std::vector<pShapeDrawBitmapCommandVertex> newXY;
-					newXY.reserve(size);
-					//PointF[] newXY = new PointF[chunk.XY.Length];
-
-					for (int xyIdx = 0; xyIdx < newXY.size(); xyIdx++)
-					{
-						float xNew = matrixData->tx + matrixData->a * command->vertices[xyIdx]->x() + matrixData->b * command->vertices[xyIdx]->y();
-						float yNew = matrixData->ty + matrixData->b * command->vertices[xyIdx]->x() + matrixData->c * command->vertices[xyIdx]->y();
-
-						auto newCommand = pShapeDrawBitmapCommandVertex(new ShapeDrawBitmapCommandVertex());
-						newCommand->x(xNew);
-						newCommand->y(yNew);
-						newXY[xyIdx] = newCommand;
-					}
-					for (auto newXY : newXY) {
-						A.push_back(newXY);
-					}
-				}
-			}
-			else
-			{
-				PointF[] pointsXY = shapeToRender.Children.SelectMany(chunk = > ((ShapeChunk)chunk).XY).ToArray();
-				A.AddRange(pointsXY);
-			}
-		}
-		else
-		{
-			int movieClipIndex = _scFile.GetMovieClips().FindIndex(s = > s.Id == timelineChildrenId[timelineArray[(i * 3)]]);
-
-			if (movieClipIndex != -1)
-			{
-				List<PointF> templist = ((MovieClip)_scFile.GetMovieClips()[movieClipIndex]).generateChildrensPointF(matrixIn, token);
-
-				if (templist == null || token.IsCancellationRequested)
-					return null;
-
-				A.AddRange(templist);
-			}
-			else if (_scFile.getTextFields().FindIndex(t = > t.Id == timelineChildrenId[timelineArray[(i * 3)]]) != -1)
-			{
-				// implement
-			}
-			else
-			{
-				throw new Exception($"Unknown type of children with id {timelineChildrenId[timelineArray[(i * 3)]]} for movieclip id {this.Id}");
-			}
-		}
-	}
-
-	return A;
-}
+//std::vector<pShapeDrawBitmapCommandVertex> generateChildrensPointF(SupercellSWF swf, pMovieClip movieClip, Matrix2D* matrixIn)
+//{
+//	std::vector<pShapeDrawBitmapCommandVertex> A;
+//
+//	for (int i = 0; i < movieClip->frameElements.size(); i++)
+//	{
+//		const pMovieClipFrameElement frameElement = movieClip->frameElements[i];
+//		optional<uint16_t> maybeShapeIndex = nullopt;
+//		for (auto shape : swf.shapes) {
+//			if (shape->id() == frameElement->instanceIndex) {
+//				maybeShapeIndex = make_optional(shape->id());
+//				break;
+//			}
+//		}
+//		if (maybeShapeIndex.has_value())
+//		{
+//			pShape shapeToRender = swf.shapes[maybeShapeIndex.value()];
+//
+//			Matrix2D* childrenMatrixData = nullptr;
+//			if (frameElement->colorTransformIndex != 0xFFFF) {
+//				swf.matrixBanks[movieClip->matrixBankIndex()]->getMatrixIndex(childrenMatrixData, frameElement->matrixIndex);
+//			}
+//			Matrix2D* matrixData;
+//			if (childrenMatrixData != nullptr) {
+//				matrixData = childrenMatrixData;
+//			}
+//
+//			if (matrixIn != nullptr)
+//			{
+//				//matrixData.Multiply(matrixIn);
+//			}
+//
+//			if (matrixData != nullptr)
+//			{
+//				for (pShapeDrawBitmapCommand command : shapeToRender->commands)
+//				{
+//					auto size = command->vertices.size();
+//					std::vector<pShapeDrawBitmapCommandVertex> newXY;
+//					newXY.reserve(size);
+//
+//					for (int xyIdx = 0; xyIdx < newXY.size(); xyIdx++)
+//					{
+//						float xNew = matrixData->tx + matrixData->a * command->vertices[xyIdx]->x() + matrixData->b * command->vertices[xyIdx]->y();
+//						float yNew = matrixData->ty + matrixData->b * command->vertices[xyIdx]->x() + matrixData->c * command->vertices[xyIdx]->y();
+//
+//						auto newCommand = pShapeDrawBitmapCommandVertex(new ShapeDrawBitmapCommandVertex());
+//						newCommand->x(xNew);
+//						newCommand->y(yNew);
+//						newXY[xyIdx] = newCommand;
+//					}
+//					for (auto newXY : newXY) {
+//						A.push_back(newXY);
+//					}
+//				}
+//			}
+//			else
+//			{
+//				for (auto command : shapeToRender->commands) {
+//					for (auto vertex : command->vertices) {
+//						A.push_back(vertex);
+//					}
+//				}
+//			}
+//		}
+//		else
+//		{
+//			optional<int> maybeMovieClipIndex = nullopt;
+//			for (auto movieClip : swf.movieClips) {
+//				if (movieClip->id() == movieClip->frameElements[i]->instanceIndex) {
+//					maybeMovieClipIndex = make_optional(movieClip->id());
+//					break;
+//				}
+//			}
+//			if (maybeMovieClipIndex.has_value())
+//			{
+//				std::vector<pShapeDrawBitmapCommandVertex> templist = generateChildrensPointF(swf, swf.movieClips[maybeMovieClipIndex.value()], matrixIn);
+//
+//				for (auto templist : templist) {
+//					A.push_back(templist);
+//				}
+//			}
+//			// else if (_scFile.getTextFields().FindIndex(t = > t.Id == timelineChildrenId[timelineArray[(i * 3)]]) != -1)
+//			// {
+//			// 	// implement
+//			// }
+//			// else
+//			// {
+//			// 	throw new Exception($"Unknown type of children with id {timelineChildrenId[timelineArray[(i * 3)]]} for movieclip id {this.Id}");
+//			// }
+//		}
+//	}
+//
+//	return A;
+//}
 
 int main(int argc, char* argv[]) {
 	// The first argument (argv[0]) is the program name
@@ -201,10 +208,15 @@ int main(int argc, char* argv[]) {
 			sc::pSWFTexture texture = swf.textures[0];
 			if (texture == nullptr) break;
 			saveToTexturePng(texture, filePath, i);
-			swf.movieClipModifiers
-				for (auto shape : swf.shapes) {
-					saveShape(texture, shape, filePath);
+			for (auto movieClip : swf.movieClips) {
+				auto points = generateChildrensPointF(swf, movieClip, nullptr);
+				for (auto point : points) {
+					std::cout << point->x() << ',' << point->y();
 				}
+			}
+			/*for (auto shape : swf.shapes) {
+				saveShape(texture, shape, filePath);
+			}*/
 			/*cout << "File has: " << '\n';
 			cout << swf.exports.size() << " export names" << '\n';
 			cout << swf.textures.size() << " textures" << '\n';
