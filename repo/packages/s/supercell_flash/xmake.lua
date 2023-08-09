@@ -9,17 +9,16 @@ package("supercell_flash")
 
     on_install("windows", function (package)
         if is_mode("MT") then
-            io.replace("premake5.lua", [[kind "StaticLib"]], [[kind "StaticLib"\nstaticruntime "on"]])
+            io.replace("premake5.lua", [[kind "StaticLib"]], [[kind "StaticLib" staticruntime "on"]])
         elseif is_mode("MD") then
-            io.replace("premake5.lua", [[kind "StaticLib"]], [[kind "StaticLib"\nstaticruntime "off"]])
+            io.replace("premake5.lua", [[kind "StaticLib"]], [[kind "StaticLib" staticruntime "off"]])
+        elseif is_mode("MTd") then 
+            io.replace("premake5.lua", [[kind "StaticLib"]], [[kind "StaticLib" staticruntime "off" debug "on"]])
+        elseif is_mode("MDd") then 
+            io.replace("premake5.lua", [[kind "StaticLib"]], [[kind "StaticLib" staticruntime "off" debug "on"]])
         end
-        os.runv("premake5", {"vs2015", "--file=Workspace.lua"})
-        for _, dir in ipairs(os.files("**")) do
-            print(dir)
-        end
-        print("OK")
-        -- os.execv("echo", {"hello", "xmake!"})
-        local configs = {"ScFlash.sln", "-c Release"}
+        os.runv("premake5", {"vs2022", "--file=Workspace.lua"})
+        local configs = {"ScFlash.sln", "/p:Configuration=Debug", "/p:Platform=Win64"}
         import("package.tools.msbuild").build(package, configs, {upgrade={"ScFlash.sln", "SupercellFlash.vcxproj"}})
     end)
 
