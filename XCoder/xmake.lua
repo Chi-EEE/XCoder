@@ -10,8 +10,6 @@ add_requires("supercell_flash")
 
 set_languages("cxx17")
 
-add_requires("supercell_flash")
-
 target("XCoder")
     set_kind("binary")
     add_rules("qt.console")
@@ -19,6 +17,7 @@ target("XCoder")
     add_packages("tl_expected")
     add_packages("qt6widgets")
     add_packages("opencv")
+    add_packages("supercell_flash")
 
     add_files("src/**.cpp")
     add_headerfiles("src/**.h")

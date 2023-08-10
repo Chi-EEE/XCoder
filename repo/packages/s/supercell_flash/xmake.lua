@@ -18,8 +18,36 @@ package("supercell_flash")
             io.replace("premake5.lua", [[kind "StaticLib"]], [[kind "StaticLib" staticruntime "off" debug "on"]])
         end
         os.runv("premake5", {"vs2022", "--file=Workspace.lua"})
-        local configs = {"ScFlash.sln", "/p:Configuration=Debug", "/p:Platform=Win64"}
+        local mode = package:debug() and "Debug" or "Release"
+        local configs = {}
+        table.insert(configs, "/p:Configuration=" .. mode)
+        table.insert(configs, "/p:Platform=" .. (package:is_arch("x64") and "Win64" or "Win32"))
+        table.insert(configs, "ScFlash.sln")
         import("package.tools.msbuild").build(package, configs, {upgrade={"ScFlash.sln", "SupercellFlash.vcxproj"}})
+
+        os.cp("dependencies/Bytestream/*.h", package:installdir("include"))
+        os.cp("dependencies/Bytestream/SupercellBytestream", package:installdir("include"))
+
+        os.cp("dependencies/Compression/include/*.h", package:installdir("include"))
+        os.cp("dependencies/Compression/include/SupercellCompression", package:installdir("include"))
+        
+        os.cp("dependencies/TextureLoader/include/*.h", package:installdir("include"))
+        os.cp("dependencies/TextureLoader/include/textures", package:installdir("include"))
+
+        os.cp("include/*.h", package:installdir("include"))
+        os.cp("include/SupercellFlash", package:installdir("include"))
+        
+        local outputdir = path.join("build", "bin", mode, "windows", "x86_64")
+        os.cp(outputdir .. "/**.lib", package:installdir("lib"))
+    end)
+
+
+    on_test(function (package)
+        assert(package:check_cxxsnippets({test = [[
+            void test() {
+                SupercellSWF swf;
+            }
+        ]]}, {configs = {languages = "c++17"}, includes = {"SupercellFlash.h"}}))
     end)
 
     -- on_install("macosx", "linux", function (package)
