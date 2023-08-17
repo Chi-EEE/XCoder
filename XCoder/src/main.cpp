@@ -1,11 +1,10 @@
 #include <iostream>
 #include "SupercellFlash.h"
-
 #include <qimage.h>
 #include <qpainter.h>
 #include <QPainterPath>
 #include "opencv2/opencv.hpp"
-
+#include "wgpu.h"
 #include "tl/expected.hpp"
 #include <optional>
 

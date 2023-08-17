@@ -225,7 +225,6 @@ package("supercell_flash")
         os.trycp("dependencies/TextureLoader/ThirdParty/libktx/include/*", package:installdir("include"))
     end)
 
-
     -- on_test(function (package)
     --     assert(package:check_cxxsnippets({test = [[
     --         void test() {
